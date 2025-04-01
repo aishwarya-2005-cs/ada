@@ -1,0 +1,99 @@
+#include <stdio.h>
+
+int cost[10][10], n, t[10][2], sum;
+
+void kruskal(int cost[10][10], int n);
+int find(int parent[10], int i);
+void sort_edges(int cost[10][10], int edges[20][3], int n);
+
+int main() {
+    int i, j;
+    printf("Enter the number of vertices: ");
+    scanf("%d", &n);
+
+    printf("Enter the cost adjacency matrix:\n");
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            scanf("%d", &cost[i][j]);
+        }
+    }
+
+    kruskal(cost, n);
+
+    printf("Edges of the minimal spanning tree:\n");
+    for (i = 0; i < n - 1; i++) {
+        printf("(%d, %d)\n", t[i][0], t[i][1]);
+    }
+
+    printf("\nSum of minimal spanning tree: %d\n", sum);
+    return 0;
+}
+
+void kruskal(int cost[10][10], int n) {
+    int min, u, v, count = 0, k = 0;
+    int parent[10], edges[20][3]; // to store edges and their costs
+
+    // Initialize parent array for Union-Find
+    for (int i = 0; i < n; i++) {
+        parent[i] = i;
+    }
+
+    // Store all edges with their corresponding costs
+    int edge_count = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = i + 1; j < n; j++) { // To avoid duplicate edges, only consider i < j
+            if (cost[i][j] != 0) { // Only consider non-zero cost edges
+                edges[edge_count][0] = i; // u vertex
+                edges[edge_count][1] = j; // v vertex
+                edges[edge_count][2] = cost[i][j]; // edge cost
+                edge_count++;
+            }
+        }
+    }
+
+    // Sort edges by their costs
+    sort_edges(cost, edges, edge_count);
+
+    // Perform Kruskal's algorithm
+    while (count < n - 1) {
+        u = edges[k][0];
+        v = edges[k][1];
+        min = edges[k][2];
+
+        int root_u = find(parent, u);
+        int root_v = find(parent, v);
+
+        // If u and v are not in the same set, include this edge in the MST
+        if (root_u != root_v) {
+            parent[root_u] = root_v; // Union operation
+            t[count][0] = u;
+            t[count][1] = v;
+            sum += min;
+            count++;
+        }
+        k++;
+    }
+}
+
+int find(int parent[10], int i) {
+    if (parent[i] != i) {
+        parent[i] = find(parent, parent[i]); // Path compression
+    }
+    return parent[i];
+}
+
+void sort_edges(int cost[10][10], int edges[20][3], int edge_count) {
+    int temp[3];
+    for (int i = 0; i < edge_count - 1; i++) {
+        for (int j = i + 1; j < edge_count; j++) {
+            if (edges[i][2] > edges[j][2]) {
+                // Swap edges[i] and edges[j]
+                for (int k = 0; k < 3; k++) {
+                    temp[k] = edges[i][k];
+                    edges[i][k] = edges[j][k];
+                    edges[j][k] = temp[k];
+                }
+            }
+        }
+    }
+}
