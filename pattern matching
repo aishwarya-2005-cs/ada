@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+
+void patternMatch(char text[], char pattern[]) {
+    int n = strlen(text);
+    int m = strlen(pattern);
+    int i, j;
+    int found = 0;
+
+    // Traverse the text
+    for (i = 0; i <= n - m; i++) {
+        // For current index i, check for pattern match
+        for (j = 0; j < m; j++) {
+            if (text[i + j] != pattern[j])
+                break;
+        }
+
+        if (j == m) {
+            printf("Pattern found at index %d\n", i);
+            found = 1;
+        }
+    }
+
+    if (!found)
+        printf("Pattern not found in the text.\n");
+}
+
+int main() {
+    char text[1000], pattern[1000];
+
+    printf("Enter the text: ");
+    fgets(text, sizeof(text), stdin);
+
+    printf("Enter the pattern to search: ");
+    fgets(pattern, sizeof(pattern), stdin);
+
+    // Remove trailing newline characters
+    text[strcspn(text, "\n")] = 0;
+    pattern[strcspn(pattern, "\n")] = 0;
+
+    patternMatch(text, pattern);
+
+    return 0;
+}
