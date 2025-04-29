@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+// Function to return the maximum of two integers
+int max(int a, int b) {
+    return (a > b) ? a : b;
+}
+
+// Recursive function to solve 0/1 Knapsack Problem
+int knapsack(int weights[], int values[], int n, int capacity) {
+    // Base Case: No items left or capacity is 0
+    if (n == 0 || capacity == 0)
+        return 0;
+
+    // If weight of the nth item is more than knapsack capacity, skip it
+    if (weights[n - 1] > capacity)
+        return knapsack(weights, values, n - 1, capacity);
+    
+    // Otherwise, consider two cases:
+    // 1. Include the item
+    // 2. Exclude the item
+    // Return the maximum of these two cases
+    else
+        return max(
+            values[n - 1] + knapsack(weights, values, n - 1, capacity - weights[n - 1]),
+            knapsack(weights, values, n - 1, capacity)
+        );
+}
+
+int main() {
+    int values[] = {60, 100, 120};
+    int weights[] = {10, 20, 30};
+    int capacity = 50;
+    int n = sizeof(values) / sizeof(values[0]);
+
+    int maxValue = knapsack(weights, values, n, capacity);
+    printf("Maximum value in Knapsack = %d\n", maxValue);
+
+    return 0;
+}
